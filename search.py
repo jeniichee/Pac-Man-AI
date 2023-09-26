@@ -87,7 +87,7 @@ def depthFirstSearch(problem: SearchProblem):
     """
     "*** YOUR CODE HERE ***"
     
-    #store nodes
+    #store nodes in stack 
     frontier = util.Stack()
     
     #visited nodes
@@ -115,9 +115,9 @@ def depthFirstSearch(problem: SearchProblem):
             visited.add(currNode)
             
             #theres a node, action, and cost to a problem?
-            for nextNode, action, _ in problem.getSuccessors(currNode):
+            for nextState, action, _ in problem.getSuccessors(currNode):
                 nextPath = path + [action]
-                frontier.push((nextNode, nextPath))
+                frontier.push((nextState, nextPath))
     return [] 
 
 def breadthFirstSearch(problem: SearchProblem):
@@ -135,8 +135,9 @@ def breadthFirstSearch(problem: SearchProblem):
     
     fifo.push((startState, [])) 
     
-    while not fifo.isEmpty():    
-        # frontier.pop() - removes most recent item from queue
+    while not fifo.isEmpty():   
+         
+        # fifo.pop() - removes most recent item from queue
         # node, path - values returned by frontier.pop() 
         currNode, path = fifo.pop()
         
@@ -149,16 +150,50 @@ def breadthFirstSearch(problem: SearchProblem):
             visited.add(currNode)
             
             #theres a node, action, and cost to a problem?
-            for nextNode, action, _ in problem.getSuccessors(currNode):
+            for nextState, action, cost in problem.getSuccessors(currNode):
                 nextPath = path + [action]
-                fifo.push((nextNode, nextPath))
+                fifo.push((nextState, nextPath))
     return [] 
     
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
+    # Frontier = Priority Q 
+    pq = util.PriorityQueue()
+    visited = set() 
+    
+    # Start state 
+    startState = problem.getStartState()
+    
+    # Node implemented as a tuple 
+    # (includes cost):(state, path-so-far, path cost)
+    initialNode = (startState, [], 0)
+    
+    # Frontier contains (node, priority) tuples
+    pq.push(initialNode, 0) 
+    
+    if problem.isGoalState(startState):
+        return []
+    
+    while not pq.isEmpty():    
+        # pq.pop() - removes most recent item from pq
+        # node, path, cost - values returned by pq.pop() 
+        currNode, path, currCost = pq.pop()
+        
+        if problem.isGoalState(currNode):
+            return path
+        
+        if currNode not in visited: 
+            visited.add(currNode)
+
+            for nextNode, action, cost in problem.getSuccessors(currNode):
+                nextPath = path + [action]
+                nextCost = currCost + cost
+                pq.push((nextNode, nextPath, nextCost), nextCost)
+    return [] 
+    
 
 def nullHeuristic(state, problem=None):
     """
@@ -170,8 +205,43 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
+     # Frontier = Priority Q 
+    pq = util.PriorityQueue()
+    visited = set() 
+    
+    # Start state 
+    startState = problem.getStartState()
+    
+    # Node implemented as a tuple 
+    # (includes cost):(state, path-so-far, path cost)
+    initialNode = (startState, [], 0)
+    
+    # Frontier contains (node, priority) tuples
+    pq.push(initialNode, heuristic(startState, problem)) 
+    
+    if problem.isGoalState(startState):
+        return []
+    
+    while not pq.isEmpty():    
+        # pq.pop() - removes most recent item from pq
+        # node, path, cost - values returned by pq.pop() 
+        currNode, path, currCost = pq.pop()
+        
+        if problem.isGoalState(currNode):
+            return path
+        
+        if currNode not in visited: 
+            visited.add(currNode)
 
+            for nextNode, action, cost in problem.getSuccessors(currNode):
+                nextPath = path + [action]
+                nextCost = currCost + cost
+                nextPrio = nextCost + heuristic(nextNode, problem)
+                pq.push((nextNode, nextPath, nextCost), nextPrio)
+    return [] 
+    
+    
 
 # Abbreviations
 bfs = breadthFirstSearch
