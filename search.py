@@ -125,7 +125,7 @@ def breadthFirstSearch(problem: SearchProblem):
     "*** YOUR CODE HERE ***"
 
     fifo = util.Queue() 
-    visited = set() 
+    visited = []
     
     #start state
     startState = problem.getStartState()
@@ -147,10 +147,10 @@ def breadthFirstSearch(problem: SearchProblem):
         
          #if currNode not goal+not in visited, add to it
         if currNode not in visited: 
-            visited.add(currNode)
+            visited.append(currNode)
             
             #theres a node, action, and cost to a problem?
-            for nextState, action, cost in problem.getSuccessors(currNode):
+            for nextState, action, _ in problem.getSuccessors(currNode):
                 nextPath = path + [action]
                 fifo.push((nextState, nextPath))
     return [] 
@@ -208,7 +208,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     
      # Frontier = Priority Q 
     pq = util.PriorityQueue()
-    visited = set() 
+    visited = []
     
     # Start state 
     startState = problem.getStartState()
@@ -232,7 +232,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
             return path
         
         if currNode not in visited: 
-            visited.add(currNode)
+            visited.append(currNode)
 
             for nextNode, action, cost in problem.getSuccessors(currNode):
                 nextPath = path + [action]
@@ -240,8 +240,6 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
                 nextPrio = nextCost + heuristic(nextNode, problem)
                 pq.push((nextNode, nextPath, nextCost), nextPrio)
     return [] 
-    
-    
 
 # Abbreviations
 bfs = breadthFirstSearch
